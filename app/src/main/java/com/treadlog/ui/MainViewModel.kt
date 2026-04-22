@@ -35,7 +35,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     ) { entries, lastOiledDate ->
         val interval = DomainLogic.calculateOilingInterval(entries)
         val nextDate = DomainLogic.calculateNextOilingDate(lastOiledDate, interval)
-        val currentWeekMins = DomainLogic.calculateCurrentWeekMinutes(entries)
+        val currentWeekMins = DomainLogic.calculateCurrentWeekMinutes(entries, lastOiledDate)
         AppState(
             entries = entries,
             lastOiledDate = lastOiledDate,

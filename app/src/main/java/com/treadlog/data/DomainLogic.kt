@@ -66,10 +66,17 @@ object DomainLogic {
         return sb.toString()
     }
 
-    fun calculateCurrentWeekMinutes(entries: List<WorkoutEntry>): Int {
+    fun calculateCurrentWeekMinutes(entries: List<WorkoutEntry>, lastOiledDateString: String?): Int {
         if (entries.isEmpty()) return 0
         val sortedEntries = entries.sortedBy { LocalDate.parse(it.date) }
-        val firstDate = LocalDate.parse(sortedEntries.first().date)
+        
+        val firstDate = if (!lastOiledDateString.isNullOrEmpty()) {
+            try { LocalDate.parse(lastOiledDateString) } 
+            catch(e: Exception) { LocalDate.parse(sortedEntries.first().date) }
+        } else {
+            LocalDate.parse(sortedEntries.first().date)
+        }
+        
         val today = LocalDate.now()
         val daysSinceFirst = ChronoUnit.DAYS.between(firstDate, today).toInt()
         val currentWeekNumber = (daysSinceFirst / 7).coerceAtLeast(0)
