@@ -3,6 +3,9 @@ package com.treadlog.ui
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.treadlog.data.AppDatabase
 import com.treadlog.data.CsvHelper
 import com.treadlog.data.DomainLogic
@@ -24,6 +27,8 @@ data class AppState(
 )
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
+    var selectedAddDate by mutableStateOf(java.time.LocalDate.now().toString())
+    
     private val database = AppDatabase.getDatabase(application)
     private val workoutDao = database.workoutDao()
     private val prefsRepository = SharedPrefsRepository(application)
