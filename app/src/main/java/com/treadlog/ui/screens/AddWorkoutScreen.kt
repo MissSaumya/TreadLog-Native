@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.treadlog.ui.MainViewModel
@@ -21,13 +22,8 @@ fun AddWorkoutScreen(viewModel: MainViewModel) {
     var notes by remember { mutableStateOf("") }
     var showDatePicker by remember { mutableStateOf(false) }
     
-    val datePickerState = rememberDatePickerState(
-        selectableDates = object : SelectableDates {
-            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-                return utcTimeMillis <= System.currentTimeMillis()
-            }
-        }
-    )
+    val context = LocalContext.current
+    val datePickerState = rememberDatePickerState()
 
     if (showDatePicker) {
         DatePickerDialog(
@@ -35,9 +31,13 @@ fun AddWorkoutScreen(viewModel: MainViewModel) {
             confirmButton = {
                 TextButton(onClick = {
                     datePickerState.selectedDateMillis?.let { millis ->
-                        viewModel.selectedAddDate = Instant.ofEpochMilli(millis).atZone(ZoneId.of("UTC")).toLocalDate().toString()
-                    }
-                    showDatePicker = false
+                        if (millis <= System.currentTimeMillis()) {
+                            viewModel.selectedAddDate = Instant.ofEpochMilli(millis).atZone(ZoneId.of("UTC")).toLocalDate().toString()
+                            showDatePicker = false
+                        } else {
+                            android.widget.Toast.makeText(context, "Future dates are not allowed", android.widget.Toast.LENGTH_SHORT).show()
+                        }
+                    } ?: run { showDatePicker = false }
                 }) { Text("OK") }
             },
             dismissButton = {
