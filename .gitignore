@@ -1,0 +1,9 @@
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+android/ -rI --exclude-dir=node_modules --exclude-dir=build --exclude-dir=dist --exclude-dir=coverage --exclude-dir=.DS_Store --exclude-dir=node_modules --exclude-dir=.next --exclude-dir=build --exclude-dir=out --exclude-dir=dist --exclude-dir=.DS_Store

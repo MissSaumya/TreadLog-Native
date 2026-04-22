@@ -1,0 +1,6 @@
+{
+  "name": "TreadLog",
+  "description": "A mobile-first progressive web app to track treadmill usage natively, with weekly summaries and automated lubrication reminders based on high-usage criteria.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
