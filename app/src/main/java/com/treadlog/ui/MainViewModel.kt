@@ -61,6 +61,19 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             triggerCsvBackup()
         }
     }
+
+    fun importCsv(csvString: String) {
+        viewModelScope.launch {
+            val parsedEntries = DomainLogic.parseCsvString(csvString)
+            for (entry in parsedEntries) {
+                val existing = workoutDao.getEntryByDate(entry.date)
+                if (existing == null) {
+                    workoutDao.insertEntry(entry)
+                }
+            }
+            triggerCsvBackup()
+        }
+    }
     
     fun setLastOiledDate(dateString: String) {
         viewModelScope.launch {

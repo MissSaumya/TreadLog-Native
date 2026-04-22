@@ -14,6 +14,11 @@ import kotlinx.coroutines.launch
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AddCircle
+import androidx.compose.material.icons.rounded.Dashboard
+import androidx.compose.material.icons.rounded.History
+import androidx.compose.material.icons.rounded.Settings
 import com.treadlog.ui.screens.DashboardScreen
 import com.treadlog.ui.screens.AddWorkoutScreen
 import com.treadlog.ui.screens.HistoryScreen
@@ -28,7 +33,12 @@ class MainActivity : ComponentActivity() {
                 val viewModel: MainViewModel = viewModel()
                 val state by viewModel.state.collectAsState()
                 
-                val tabs = listOf("Dashboard", "Add", "History", "Maintenance")
+                val tabs = listOf(
+                    "Dashboard" to Icons.Rounded.Dashboard,
+                    "Add" to Icons.Rounded.AddCircle,
+                    "History" to Icons.Rounded.History,
+                    "Maintenance" to Icons.Rounded.Settings
+                )
                 val pagerState = rememberPagerState(pageCount = { tabs.size })
                 val coroutineScope = rememberCoroutineScope()
 
@@ -37,7 +47,7 @@ class MainActivity : ComponentActivity() {
                         NavigationBar(
                             containerColor = MaterialTheme.colorScheme.surface
                         ) {
-                            tabs.forEachIndexed { index, title ->
+                            tabs.forEachIndexed { index, (title, iconRes) ->
                                 NavigationBarItem(
                                     selected = pagerState.currentPage == index,
                                     onClick = {
@@ -45,7 +55,7 @@ class MainActivity : ComponentActivity() {
                                             pagerState.animateScrollToPage(index)
                                         }
                                     },
-                                    icon = { Text(title.take(1)) },
+                                    icon = { Icon(iconRes, contentDescription = title) },
                                     label = { Text(title) },
                                     colors = NavigationBarItemDefaults.colors(
                                         indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),

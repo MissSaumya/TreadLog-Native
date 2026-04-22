@@ -65,4 +65,37 @@ object DomainLogic {
         }
         return sb.toString()
     }
+
+    // Import function
+    fun parseCsvString(csvString: String): List<WorkoutEntry> {
+        val entries = mutableListOf<WorkoutEntry>()
+        val lines = csvString.split(Regex("\\r?\\n"))
+        var isHeader = true
+        for (line in lines) {
+            val cleanLine = line.trim().removePrefix("\uFEFF")
+            if (cleanLine.isEmpty()) continue
+            if (isHeader) { isHeader = false; continue }
+
+            // Regex to split by comma except inside quotes
+            val cols = cleanLine.split(Regex(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)")).map { it.trim() }
+            if (cols.size >= 2) {
+                val date = cols[0]
+                val minutes = cols[1].toIntOrNull() ?: 0
+                var notes: String? = if (cols.size >= 3) cols[2] else null
+                
+                // Clean up quotes from notes
+                if (notes != null && notes.startsWith("\"") && notes.endsWith("\"")) {
+                    notes = notes.substring(1, notes.length - 1).replace("\"\"", "\"")
+                }
+                if (notes.isNullOrBlank()) notes = null
+                
+                val loggedAt = if (cols.size >= 4) cols[3].toLongOrNull() ?: System.currentTimeMillis() else System.currentTimeMillis()
+                
+                if (minutes > 0) {
+                    entries.add(WorkoutEntry(date = date, minutes = minutes, notes = notes, createdAt = loggedAt))
+                }
+            }
+        }
+        return entries
+    }
 }

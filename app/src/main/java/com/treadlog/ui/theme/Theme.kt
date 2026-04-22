@@ -5,12 +5,12 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 
 private val DarkColorScheme = darkColorScheme(
-    primary = OrangePrimary,
+    primary = OrangeNeon,
     secondary = BlueGlow,
-    background = NavyBlue,
-    surface = NavyLight,
+    background = NavyDeep,
+    surface = NavyCard,
     onPrimary = TextWhite,
-    onSecondary = NavyBlue,
+    onSecondary = NavyDeep,
     onBackground = TextWhite,
     onSurface = TextWhite
 )
