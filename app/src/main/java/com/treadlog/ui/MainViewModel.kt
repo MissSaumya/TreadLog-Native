@@ -19,7 +19,8 @@ data class AppState(
     val entries: List<WorkoutEntry> = emptyList(),
     val lastOiledDate: String? = null,
     val nextOilingDate: String? = null,
-    val maintenanceInterval: Int = 60
+    val maintenanceInterval: Int = 60,
+    val currentWeekMinutes: Int = 0
 )
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
@@ -34,11 +35,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     ) { entries, lastOiledDate ->
         val interval = DomainLogic.calculateOilingInterval(entries)
         val nextDate = DomainLogic.calculateNextOilingDate(lastOiledDate, interval)
+        val currentWeekMins = DomainLogic.calculateCurrentWeekMinutes(entries)
         AppState(
             entries = entries,
             lastOiledDate = lastOiledDate,
             nextOilingDate = nextDate,
-            maintenanceInterval = interval
+            maintenanceInterval = interval,
+            currentWeekMinutes = currentWeekMins
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AppState())
 
