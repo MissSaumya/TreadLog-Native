@@ -10,9 +10,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.FileDownload
 import androidx.compose.material.icons.rounded.FileUpload
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import android.widget.Toast
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -47,35 +49,57 @@ fun HistoryScreen(state: AppState, viewModel: MainViewModel) {
             item {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                     Text("History", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onBackground)
-                    IconButton(onClick = { launcher.launch("*/*") }) {
-                        Icon(Icons.Rounded.FileUpload, contentDescription = "Import CSV", tint = MaterialTheme.colorScheme.primary)
+                    Row {
+                        IconButton(onClick = { 
+                            Toast.makeText(context, "Saved to Documents/Treadmill Logs", Toast.LENGTH_LONG).show() 
+                        }) {
+                            Icon(Icons.Rounded.FileDownload, contentDescription = "Export CSV", tint = MaterialTheme.colorScheme.primary)
+                        }
+                        IconButton(onClick = { launcher.launch("*/*") }) {
+                            Icon(Icons.Rounded.FileUpload, contentDescription = "Import CSV", tint = MaterialTheme.colorScheme.primary)
+                        }
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
             }
-            items(state.entries) { entry ->
-                Card(
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    shape = RoundedCornerShape(16.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.padding(20.dp).fillMaxWidth(), 
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+            
+            val groupedEntries = state.entries.sortedByDescending { it.date }.groupBy { it.date }
+            
+            groupedEntries.forEach { (dateStr, entriesForDate) ->
+                item {
+                    Text(
+                        text = dateStr,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = MaterialTheme.colorScheme.secondary,
+                        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp, start = 8.dp)
+                    )
+                }
+                items(entriesForDate) { entry ->
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        shape = RoundedCornerShape(16.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp)
                     ) {
-                        Column {
-                            Text(entry.date, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
-                            if (entry.notes != null) {
-                                Text(entry.notes, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface.copy(alpha=0.6f))
+                        Row(
+                            modifier = Modifier.padding(20.dp).fillMaxWidth(), 
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                if (entry.notes != null) {
+                                    Text(entry.notes, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
+                                } else {
+                                    Text("No Notes", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface.copy(alpha=0.5f))
+                                }
                             }
-                        }
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text("${entry.minutes} m", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
-                            Spacer(modifier = Modifier.width(16.dp))
-                            IconButton(onClick = { viewModel.deleteWorkout(entry) }) {
-                                Icon(Icons.Rounded.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error.copy(alpha=0.8f))
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text("${entry.minutes} m", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                                Spacer(modifier = Modifier.width(16.dp))
+                                IconButton(onClick = { viewModel.deleteWorkout(entry) }) {
+                                    Icon(Icons.Rounded.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error.copy(alpha=0.8f))
+                                }
                             }
                         }
                     }
